@@ -11,5 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="TESTING" />
+        android:text="TESTING"
+        android:textSize="24dp"
+        android:layout_marginLeft="50dp" />
+    
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="15dp"
+        android:src="@drawable/icon_hudllogo"/>
 </android.support.v7.widget.CardView>
