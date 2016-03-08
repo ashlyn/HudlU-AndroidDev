@@ -16,6 +16,10 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private final String[] mData = new String[]{"Adam Gucwa", "Alberto Chamorro",
+            "Chanse Strode", "Craig Zheng", "David Bohner", "Eric Clymer", "Jessica Hoffman", "Jon Evans", "Jordan Degner",
+            "Mitchel Pigsley", "Peter Yasi", "Seth Prauner", "Sue Yi", "Zach Ramaekers", "Mike Isman", "Josh Cox"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
         // use LinearLayoutManager for RecyclerView
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // use MyAdapter for RecyclerView adapter
+        MyAdapter adapter = new MyAdapter(this, mData);
+        mRecyclerView.setAdapter(adapter);
     }
 
     @Override
