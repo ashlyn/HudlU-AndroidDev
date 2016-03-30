@@ -9,20 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
 
 import java.util.List;
 
-import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.MashableNews;
 import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.MashableNewsItem;
 
 /**
@@ -50,10 +45,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        holder.mTitleTextView.setText(mListData.get(position).title);
-        holder.mAuthorTextView.setText(mListData.get(position).author);
+        MashableNewsItem item = mListData.get(position);
+        holder.mTitleTextView.setText(item.title);
+        holder.mAuthorTextView.setText(item.author);
 
-        ImageRequest request = new ImageRequest(mListData.get(position).feature_image,
+        ImageRequest request = new ImageRequest(item.feature_image,
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap bitmap) {

@@ -104,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
         if (networkInfo != null && networkInfo.isConnected()) {
             RequestQueue requestQueue = Volley.newRequestQueue(this);
 
-            CharSequence message = "Fetching Latest News";
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.fetching_news), Toast.LENGTH_SHORT).show();
 
             StringRequest request = new StringRequest(Request.Method.GET,
                     "http://mashable.com/stories.json?hot_per_page=0&new_per_page=5&rising_per_page=0",
@@ -122,15 +121,13 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Context context = getApplicationContext();
-                            CharSequence message = "An Error Occurred";
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.generic_error), Toast.LENGTH_SHORT).show();
                         }
                     });
 
             requestQueue.add(request);
         } else {
-            CharSequence message = "No Network Connection";
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
         }
     }
 }
