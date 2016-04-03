@@ -1,9 +1,7 @@
 package lee.ashlyn.hudlu;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,38 +19,38 @@ import com.android.volley.toolbox.Volley;
 
 import java.util.List;
 
-import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.MashableNewsItem;
+import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.Favorite;
 
 /**
  * Created by ashlyn.lee on 3/8/16.
  */
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoriteViewHolder> {
 
-    private List<MashableNewsItem> mListData;
+    private List<Favorite> mListData;
     private OnAdapterInteractionListener mListener;
     private RequestQueue mRequestQueue;
 
-    public MyAdapter(Context context, List<MashableNewsItem> data) {
+    public FavoritesAdapter(Context context, List<Favorite> data) {
         mListener = (OnAdapterInteractionListener) context;
         mListData = data;
         mRequestQueue = Volley.newRequestQueue(context);
     }
 
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FavoriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_view, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
+        FavoriteViewHolder vh = new FavoriteViewHolder(v);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        MashableNewsItem item = mListData.get(position);
-        holder.mTitleTextView.setText(item.title);
-        holder.mAuthorTextView.setText(item.author);
+    public void onBindViewHolder(final FavoriteViewHolder holder, final int position) {
+        Favorite item = mListData.get(position);
+        holder.mTitleTextView.setText(item.getTitle());
+        holder.mAuthorTextView.setText(item.getAuthor());
 
-        ImageRequest request = new ImageRequest(item.feature_image,
+        ImageRequest request = new ImageRequest(item.getFeatureImage(),
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap bitmap) {
@@ -75,23 +73,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         });
 
-        Context context = holder.itemView.getContext();
-        boolean isFavorite = FavoriteUtil.isFavorite(context, item);
-        if (isFavorite) {
-            holder.mFavoriteButton.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
-            holder.mFavoriteButton.setTextColor(ContextCompat.getColor(context, R.color.colorWhite));
-        } else {
-            holder.mFavoriteButton.setBackgroundColor(ContextCompat.getColor(context, R.color.colorWhite));
-            holder.mFavoriteButton.setTextColor(ContextCompat.getColor(context, R.color.colorBlack));
-        }
-
-        holder.mFavoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onItemClicked(v, position);
-            }
-        });
-
+        holder.mFavoriteButton.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -99,13 +81,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return mListData.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         TextView mTitleTextView;
         TextView mAuthorTextView;
         ImageView mImageView;
         Button mFavoriteButton;
 
-        public MyViewHolder(View itemView) {
+        public FavoriteViewHolder(View itemView) {
             super(itemView);
             mTitleTextView = (TextView) itemView.findViewById(R.id.item_title);
             mAuthorTextView = (TextView) itemView.findViewById(R.id.item_author);

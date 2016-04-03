@@ -1,11 +1,14 @@
 package lee.ashlyn.hudlu;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,13 +34,14 @@ import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.MashableNews;
 import lee.ashlyn.hudlu.lee.ashlyn.hudlu.models.MashableNewsItem;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapterInteractionListener {
+    static SharedPreferences preferences;
+    static SharedPreferences.Editor editor;
+    static final String PREFERENCES_NAME = "HudlUPreferences";
+
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private final List<MashableNewsItem> mData = new ArrayList<>();
-            //new String[]{"Adam Gucwa", "Alberto Chamorro",
-            //"Chanse Strode", "Craig Zheng", "David Bohner", "Eric Clymer", "Jessica Hoffman", "Jon Evans", "Jordan Degner",
-            //"Mitchel Pigsley", "Peter Yasi", "Seth Prauner", "Sue Yi", "Zach Ramaekers", "Mike Isman", "Josh Cox"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +50,9 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        preferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        editor = preferences.edit();
+        showWelcomeAlert();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.list);
 
@@ -85,7 +84,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Log.d("HudlU", "Settings menu item clicked");
+            Intent intent = new Intent(this, FavoritesActivity.class);
+            startActivity(intent);
             return true;
         }
 
@@ -94,7 +94,20 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
 
     @Override
     public void onItemClicked(View view, int position) {
-        Snackbar.make(view, mData.get(position).author, Snackbar.LENGTH_SHORT).show();
+        if (view.getId() == R.id.favorite_button) {
+            MashableNewsItem item = mData.get(position);
+            boolean isFavorite = FavoriteUtil.isFavorite(this, item);
+            if (!isFavorite) {
+                FavoriteUtil.addFavorite(this, item);
+            } else {
+                FavoriteUtil.removeFavorite(this, item);
+            }
+
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+        } else {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mData.get(position).link));
+            startActivity(intent);
+        }
     }
 
     public void fetchLatestNews() {
@@ -128,6 +141,23 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.OnAdapt
             requestQueue.add(request);
         } else {
             Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showWelcomeAlert() {
+        boolean welcomeShown = preferences.getBoolean("WelcomeShown", false);
+
+        if (!welcomeShown) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.welcome_message)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            editor.putBoolean("WelcomeShown", true).commit();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 }
